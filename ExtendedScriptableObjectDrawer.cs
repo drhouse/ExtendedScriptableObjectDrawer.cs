@@ -81,7 +81,10 @@ public class ExtendedScriptableObjectDrawer : PropertyDrawer {
 					MonoScript ms = MonoScript.FromMonoBehaviour((MonoBehaviour)property.serializedObject.targetObject);
 					selectedAssetPath = System.IO.Path.GetDirectoryName(AssetDatabase.GetAssetPath( ms ));
 				}
-				property.objectReferenceValue = CreateAssetWithSavePrompt(fieldInfo.FieldType, selectedAssetPath);
+				Type type = fieldInfo.FieldType;
+				if(type.IsArray) type = type.GetElementType();
+				else if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>)) type = type.GetGenericArguments()[0];
+				property.objectReferenceValue = CreateAssetWithSavePrompt(type, selectedAssetPath);
 			}
 		}
 		property.serializedObject.ApplyModifiedProperties();
@@ -90,9 +93,6 @@ public class ExtendedScriptableObjectDrawer : PropertyDrawer {
 
 	// Creates a new ScriptableObject via the default Save File panel
 	ScriptableObject CreateAssetWithSavePrompt (Type type, string path) {
-		if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))
-			type = type.GetGenericArguments()[0];
-
 		path = EditorUtility.SaveFilePanelInProject("Save ScriptableObject", "New "+type.Name+".asset", "asset", "Enter a file name for the ScriptableObject.", path);
 		if (path == "") return null;
 		ScriptableObject asset = ScriptableObject.CreateInstance(type);

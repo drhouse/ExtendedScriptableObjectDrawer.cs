@@ -72,8 +72,9 @@ public class ExtendedScriptableObjectDrawer : PropertyDrawer {
 		if(propertySO != null || property.objectReferenceValue == null) {
 			propertyRect.width -= buttonWidth;
 		}
-			
-		property.objectReferenceValue = EditorGUI.ObjectField(propertyRect, GUIContent.none, property.objectReferenceValue, typeof(ScriptableObject), false);
+		
+		var type = GetFieldType();
+		property.objectReferenceValue = EditorGUI.ObjectField(propertyRect, GUIContent.none, property.objectReferenceValue, type, false);
 		if (GUI.changed) property.serializedObject.ApplyModifiedProperties();
 
 		var buttonRect = new Rect(position.x + position.width - buttonWidth, position.y, buttonWidth, EditorGUIUtility.singleLineHeight);
@@ -113,9 +114,7 @@ public class ExtendedScriptableObjectDrawer : PropertyDrawer {
 					MonoScript ms = MonoScript.FromMonoBehaviour((MonoBehaviour)property.serializedObject.targetObject);
 					selectedAssetPath = System.IO.Path.GetDirectoryName(AssetDatabase.GetAssetPath( ms ));
 				}
-				Type type = fieldInfo.FieldType;
-				if(type.IsArray) type = type.GetElementType();
-				else if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>)) type = type.GetGenericArguments()[0];
+				
 				property.objectReferenceValue = CreateAssetWithSavePrompt(type, selectedAssetPath);
 			}
 		}
@@ -256,8 +255,15 @@ public class ExtendedScriptableObjectDrawer : PropertyDrawer {
 		EditorGUIUtility.PingObject(asset);
 		return asset;
 	}
+	
+	Type GetFieldType () {
+		Type type = fieldInfo.FieldType;
+		if(type.IsArray) type = type.GetElementType();
+		else if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>)) type = type.GetGenericArguments()[0];
+		return type;
+	}
 
-	public bool AreAnySubPropertiesVisible(SerializedProperty property) {
+	static bool AreAnySubPropertiesVisible(SerializedProperty property) {
         var data = (ScriptableObject)property.objectReferenceValue;
         SerializedObject serializedObject = new SerializedObject(data);
         SerializedProperty prop = serializedObject.GetIterator();

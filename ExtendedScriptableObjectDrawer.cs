@@ -20,7 +20,7 @@ public class ExtendedScriptableObjectDrawer : PropertyDrawer {
 	
 	public override float GetPropertyHeight (SerializedProperty property, GUIContent label) {
 		float totalHeight = EditorGUIUtility.singleLineHeight;
-        if(property.objectReferenceValue == null || AreAnySubPropertiesVisible(property)){
+        if(property.objectReferenceValue == null || !AreAnySubPropertiesVisible(property)){
             return totalHeight;
         }
 		if(property.isExpanded) {

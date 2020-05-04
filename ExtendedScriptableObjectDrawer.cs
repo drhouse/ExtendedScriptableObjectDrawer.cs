@@ -46,6 +46,11 @@ public class ExtendedScriptableObjectDrawer : PropertyDrawer {
 	const int buttonWidth = 66;
 	public override void OnGUI (Rect position, SerializedProperty property, GUIContent label) {
 		EditorGUI.BeginProperty (position, label, property);
+		if(property.serializedObject.targetObject is TMPro.TMP_FontAsset) {
+			EditorGUI.PropertyField(position, property, label);	
+			EditorGUI.EndProperty ();
+			return;
+		}
 		
 		ScriptableObject propertySO = null;
 		if(!property.hasMultipleDifferentValues && property.serializedObject.targetObject != null && property.serializedObject.targetObject is ScriptableObject) {

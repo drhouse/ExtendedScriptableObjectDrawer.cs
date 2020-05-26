@@ -45,13 +45,13 @@ public class ExtendedScriptableObjectDrawer : PropertyDrawer {
 
 	const int buttonWidth = 66;
 	
-	static readonly string[] ignoreClassFullNames = { "TMPro.TMP_FontAsset" };
+	static readonly List<string> ignoreClassFullNames = new List<string>{ "TMPro.TMP_FontAsset" };
 	
 	public override void OnGUI (Rect position, SerializedProperty property, GUIContent label) {
 		EditorGUI.BeginProperty (position, label, property);
 		var type = GetFieldType();
 		
-		if(ignoreClassFullNames.Contains(type.FullName)) {
+		if(type == null || ignoreClassFullNames.Contains(type.FullName)) {
 			EditorGUI.PropertyField(position, property, label);	
 			EditorGUI.EndProperty ();
 			return;

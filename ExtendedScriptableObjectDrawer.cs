@@ -83,7 +83,7 @@ public class ExtendedScriptableObjectDrawer : PropertyDrawer {
 			propertyRect.width -= buttonWidth;
 		}
 		
-		property.objectReferenceValue = EditorGUI.ObjectField(propertyRect, GUIContent.none, property.objectReferenceValue, type, false);
+		EditorGUI.ObjectField(propertyRect, property, type, GUIContent.none);
 		if (GUI.changed) property.serializedObject.ApplyModifiedProperties();
 
 		var buttonRect = new Rect(position.x + position.width - buttonWidth, position.y, buttonWidth, EditorGUIUtility.singleLineHeight);
